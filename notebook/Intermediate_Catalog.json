@@ -116,6 +116,13 @@
 				"execution_count": 5
 			},
 			{
+				"cell_type": "code",
+				"source": [
+					"va_catalog.head(10)"
+				],
+				"execution_count": 6
+			},
+			{
 				"cell_type": "markdown",
 				"source": [
 					"## From Southridge"
@@ -128,9 +135,16 @@
 					"# Drop the original actors array, as it is then no longer needed\n",
 					"# Also drop the Cosmos DB metadata, as it will not be valuable here\n",
 					"\n",
-					"sr_catalog = spark.read.json(\"abfss://southridge@mdwohlake.dfs.core.windows.net/raw/catalog/movies\") \\\n",
+					"sr_catalog = spark.read.json(\"abfss://rawzone@openhackec44.dfs.core.windows.net/Movies/movies.json\") \\\n",
 					"  .withColumn('actor', F.explode('actors')) \\\n",
 					"  .drop('actors', '_attachments', '_etag', '_rid', '_self', '_ts')"
+				],
+				"execution_count": 7
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"sr_catalog.head(5)"
 				],
 				"execution_count": 8
 			},
