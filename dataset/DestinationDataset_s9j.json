@@ -1,0 +1,29 @@
+{
+	"name": "DestinationDataset_s9j",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "openhack-synapse-ec44-WorkspaceDefaultStorage",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"cw_fileName": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@dataset().cw_fileName",
+					"type": "Expression"
+				},
+				"folderPath": "VanArsdelLTD",
+				"fileSystem": "rawzone"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	}
+}
