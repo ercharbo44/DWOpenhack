@@ -1,0 +1,16 @@
+{
+	"name": "VanArdels_SQLServer",
+	"type": "Microsoft.Synapse/workspaces/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "SqlServer",
+		"typeProperties": {
+			"connectionString": "integrated security=False;data source=VanArsdelLtd;initial catalog=OnPremRentals;user id=southridge",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiIzMzc4MDM0OC0xMzUzLTRkYmUtYjliYy00ZWFiMGIyZTYzZGQiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+		},
+		"connectVia": {
+			"referenceName": "IRVanArseldLMT",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}

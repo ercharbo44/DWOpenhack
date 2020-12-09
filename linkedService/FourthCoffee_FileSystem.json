@@ -1,0 +1,17 @@
+{
+	"name": "FourthCoffee_FileSystem",
+	"type": "Microsoft.Synapse/workspaces/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "FileServer",
+		"typeProperties": {
+			"host": "C:\\Rentals",
+			"userId": "openhackadmin",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiI4MmNkNGE5YS04M2JiLTQ2NjYtOTEyNi05YzEwODU2ZTcxMzMiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+		},
+		"connectVia": {
+			"referenceName": "IRFouthCoffee",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}

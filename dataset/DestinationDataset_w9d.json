@@ -1,0 +1,20 @@
+{
+	"name": "DestinationDataset_w9d",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "openhack-synapse-ec44-WorkspaceDefaultStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "Movies",
+				"fileSystem": "rawzone"
+			}
+		},
+		"schema": {}
+	},
+	"type": "Microsoft.Synapse/workspaces/datasets"
+}
