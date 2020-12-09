@@ -1580,7 +1580,7 @@
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
 				"nbformat": 4,
-				"nbformat_minor": 0,
+				"nbformat_minor": 2,
 				"bigDataPool": {
 					"referenceName": "Openhackspark",
 					"type": "BigDataPoolReference"
@@ -1614,16 +1614,12 @@
 						"sparkVersion": "2.4",
 						"nodeCount": 10,
 						"cores": 4,
-						"memory": 28,
-						"extraHeader": {},
-						"automaticScaleJobs": false
-					},
-					"sessionKeepAliveTimeout": 30
+						"memory": 28
+					}
 				},
 				"cells": [
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"import uuid\n",
 							"import pyspark.sql.functions as F\n",
@@ -1631,25 +1627,22 @@
 							"from pyspark.sql.types import StringType,DateType,LongType,IntegerType,TimestampType"
 						],
 						"outputs": [],
-						"execution_count": 2
+						"execution_count": 1
 					},
 					{
 						"cell_type": "markdown",
-						"metadata": {},
 						"source": [
 							"# Collect the raw catalog data from all three source systems"
 						]
 					},
 					{
 						"cell_type": "markdown",
-						"metadata": {},
 						"source": [
 							"## From Fourth Coffee"
 						]
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"fc_movies = spark.read.csv(\"abfss://rawzone@openhackec44.dfs.core.windows.net/FouthCoffee/Movies.csv\", header='true', inferSchema='true')\n",
 							"fc_actors = spark.read.csv(\"abfss://rawzone@openhackec44.dfs.core.windows.net/FouthCoffee/Actors.csv\", header='true', inferSchema='true')\n",
@@ -1666,28 +1659,24 @@
 							"  .join(fc_mappings, on='MovieId', how='left')"
 						],
 						"outputs": [],
-						"execution_count": 3
+						"execution_count": 2
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"fc_catalog.head(10)"
 						],
-						"attachments": {},
 						"outputs": [],
-						"execution_count": 4
+						"execution_count": 3
 					},
 					{
 						"cell_type": "markdown",
-						"metadata": {},
 						"source": [
 							"## From VanArsdel"
 						]
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"va_movies = spark.read.parquet(\"abfss://rawzone@openhackec44.dfs.core.windows.net/VanArsdelLTD/dboMovies.parquet\")\n",
 							"va_actors = spark.read.parquet(\"abfss://rawzone@openhackec44.dfs.core.windows.net/VanArsdelLTD/dboActors.parquet\")\n",
@@ -1704,33 +1693,47 @@
 							"  .join(va_mappings, on='MovieId', how='left')"
 						],
 						"outputs": [],
+						"execution_count": 4
+					},
+					{
+						"cell_type": "code",
+						"source": [
+							"va_catalog.head(5)"
+						],
+						"outputs": [],
 						"execution_count": 5
 					},
 					{
 						"cell_type": "markdown",
-						"metadata": {},
 						"source": [
 							"## From Southridge"
 						]
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"# After reading the JSON, explode the actors array to create multiple rows per movie, each having a single actor name\n",
 							"# Drop the original actors array, as it is then no longer needed\n",
 							"# Also drop the Cosmos DB metadata, as it will not be valuable here\n",
 							"\n",
-							"sr_catalog = spark.read.json(\"abfss://southridge@mdwohlake.dfs.core.windows.net/raw/catalog/movies\") \\\n",
+							"sr_catalog = spark.read.json(\"abfss://rawzone@openhackec44.dfs.core.windows.net/Movies/movies.json\") \\\n",
 							"  .withColumn('actor', F.explode('actors')) \\\n",
 							"  .drop('actors', '_attachments', '_etag', '_rid', '_self', '_ts')"
 						],
 						"outputs": [],
-						"execution_count": 8
+						"execution_count": 9
+					},
+					{
+						"cell_type": "code",
+						"source": [
+							"sr_catalog.head(5)\n",
+							""
+						],
+						"outputs": [],
+						"execution_count": 10
 					},
 					{
 						"cell_type": "markdown",
-						"metadata": {},
 						"source": [
 							"# Observe inconsistencies in the data types and formats\n",
 							"\n",
@@ -1739,7 +1742,6 @@
 					},
 					{
 						"cell_type": "markdown",
-						"metadata": {},
 						"source": [
 							"## Release dates and availability dates\n",
 							"\n",
@@ -1750,7 +1752,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"fc_dates = fc_catalog.select(col('ReleaseDate').alias('FcReleaseDate'), col('MovieId'), col('OnlineMovieId'))\n",
 							"va_dates = va_catalog.select(col('ReleaseDate').alias('VaReleaseDate'), col('MovieId'), col('OnlineMovieId'))\n",
@@ -1770,7 +1771,6 @@
 					},
 					{
 						"cell_type": "markdown",
-						"metadata": {},
 						"source": [
 							"### Looking at the dates\n",
 							"\n",
@@ -1799,14 +1799,12 @@
 					},
 					{
 						"cell_type": "markdown",
-						"metadata": {},
 						"source": [
 							"> Note: We are not only parsing the dates here, but also adding a column to track the SourceSystemId"
 						]
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"fc_catalog = fc_catalog \\\n",
 							"  .withColumn('ReleaseDate', F.to_date(col('ReleaseDate'), 'MM-dd-yyyy')) \\\n",
@@ -1822,11 +1820,10 @@
 							"  .withColumn('SourceSystemId', F.lit('SR'))"
 						],
 						"outputs": [],
-						"execution_count": 14
+						"execution_count": 12
 					},
 					{
 						"cell_type": "markdown",
-						"metadata": {},
 						"source": [
 							"## Unioning the data\n",
 							"\n",
@@ -1875,18 +1872,16 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"# This is used in the following cells to create a new unique identifier\n",
 							"\n",
 							"uuidUdf = F.udf(lambda : str(uuid.uuid4()), StringType())"
 						],
 						"outputs": [],
-						"execution_count": 16
+						"execution_count": 13
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"sr_conformed = sr_catalog \\\n",
 							"  .select([ \\\n",
@@ -1906,11 +1901,10 @@
 							"  .withColumn(\"CatalogId\", uuidUdf())"
 						],
 						"outputs": [],
-						"execution_count": 17
+						"execution_count": 14
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"# VanArsdel and Fourth Coffee are extremely similar\n",
 							"\n",
@@ -1949,27 +1943,25 @@
 							"  .withColumn(\"CatalogId\", uuidUdf())"
 						],
 						"outputs": [],
-						"execution_count": 18
+						"execution_count": 15
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"# The full catalog is now a straightforward union\n",
 							"\n",
 							"full_catalog = sr_conformed.union(va_conformed).union(fc_conformed)\n",
-							"full_catalog.write.mode(\"overwrite\").parquet(\"abfss://southridge@mdwohlake.dfs.core.windows.net/conformed/catalog\")"
+							"full_catalog.write.mode(\"overwrite\").parquet(\"abfss://rawzone@openhackec44.dfs.core.windows.net/Normalized/catalog\")"
 						],
 						"outputs": [],
-						"execution_count": 19
+						"execution_count": 16
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"# Let's rehydrate and confirm that everything checks out\n",
 							"\n",
-							"rehydrated_catalog = spark.read.parquet(\"abfss://southridge@mdwohlake.dfs.core.windows.net/conformed/catalog\")\n",
+							"rehydrated_catalog = spark.read.parquet(\"abfss://rawzone@openhackec44.dfs.core.windows.net/Normalized/catalog\")\n",
 							"\n",
 							"sr_rehydrated = rehydrated_catalog.filter(\"SourceSystemID=='SR'\")\n",
 							"\n",
@@ -1982,7 +1974,7 @@
 							"print(sr_actors_per_movie.limit(1).collect())"
 						],
 						"outputs": [],
-						"execution_count": 20
+						"execution_count": 18
 					}
 				]
 			},
@@ -2024,6 +2016,64 @@
 						"source": [
 							"%%pyspark\r\n",
 							"df = spark.read.load('abfss://rawzone@openhackec44.dfs.core.windows.net/VanArsdelLTD/dboMovies.txt', format='text')\r\n",
+							"display(df.limit(10))"
+						],
+						"outputs": [],
+						"execution_count": null
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Notebook 2')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "Openhackspark",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/e6fcac13-b9bc-4f47-af3e-dfa48d717c6d/resourceGroups/mdw-oh-01-westeurope/providers/Microsoft.Synapse/workspaces/openhack-synapse-ec44/bigDataPools/Openhackspark",
+						"name": "Openhackspark",
+						"type": "Spark",
+						"endpoint": "https://openhack-synapse-ec44.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/Openhackspark",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "2.4",
+						"nodeCount": 10,
+						"cores": 4,
+						"memory": 28
+					}
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"source": [
+							"%%pyspark\r\n",
+							"df = spark.read.load('abfss://rawzone@openhackec44.dfs.core.windows.net/Movies/movies.json', format='json')\r\n",
 							"display(df.limit(10))"
 						],
 						"outputs": [],
