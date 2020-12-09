@@ -50,7 +50,7 @@
 					"from pyspark.sql.functions import col\n",
 					"from pyspark.sql.types import StringType,DateType,LongType,IntegerType,TimestampType"
 				],
-				"execution_count": 1
+				"execution_count": 2
 			},
 			{
 				"cell_type": "markdown",
@@ -81,7 +81,14 @@
 					"  .join(fc_actors, on='ActorId', how='left') \\\n",
 					"  .join(fc_mappings, on='MovieId', how='left')"
 				],
-				"execution_count": 2
+				"execution_count": 3
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"fc_catalog.head(10)"
+				],
+				"execution_count": 4
 			},
 			{
 				"cell_type": "markdown",
@@ -92,10 +99,10 @@
 			{
 				"cell_type": "code",
 				"source": [
-					"va_movies = spark.read.parquet(\"abfss://southridge@mdwohlake.dfs.core.windows.net/raw/vanarsdel/dbo.Movies.parquet\")\n",
-					"va_actors = spark.read.parquet(\"abfss://southridge@mdwohlake.dfs.core.windows.net/raw/vanarsdel/dbo.Actors.parquet\")\n",
-					"va_movie_actors = spark.read.parquet(\"abfss://southridge@mdwohlake.dfs.core.windows.net/raw/vanarsdel/dbo.MovieActors.parquet\")\n",
-					"va_mappings = spark.read.parquet(\"abfss://southridge@mdwohlake.dfs.core.windows.net/raw/vanarsdel/dbo.OnlineMovieMappings.parquet\")\n",
+					"va_movies = spark.read.parquet(\"abfss://rawzone@openhackec44.dfs.core.windows.net/VanArsdelLTD/dboMovies.parquet\")\n",
+					"va_actors = spark.read.parquet(\"abfss://rawzone@openhackec44.dfs.core.windows.net/VanArsdelLTD/dboActors.parquet\")\n",
+					"va_movie_actors = spark.read.parquet(\"abfss://rawzone@openhackec44.dfs.core.windows.net/VanArsdelLTD/dboMovieActors.parquet\")\n",
+					"va_mappings = spark.read.parquet(\"abfss://rawzone@openhackec44.dfs.core.windows.net/VanArsdelLTD/dboOnlineMovieMappings.parquet\")\n",
 					"\n",
 					"# Use the MovieActors data to join the actor information. Left join to preserve movies where the actors are not found\n",
 					"# Use the OnlineMovieMappings data to bring in the ids of movies which are also found in the Southridge Video catalog,\n",
@@ -106,7 +113,7 @@
 					"  .join(va_actors, on='ActorId', how='left') \\\n",
 					"  .join(va_mappings, on='MovieId', how='left')"
 				],
-				"execution_count": 6
+				"execution_count": 5
 			},
 			{
 				"cell_type": "markdown",
