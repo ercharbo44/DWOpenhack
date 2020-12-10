@@ -105,7 +105,7 @@
 				"cell_type": "code",
 				"source": [
 					"fc_sales = spark.read.csv(\"abfss://rawzone@openhackec44.dfs.core.windows.net/FouthCoffee/Transactions.csv\", header='true', inferSchema='true')\n",
-					"fc_sales.head(3)"
+					"fc_sales.head(1)"
 				],
 				"execution_count": 4
 			},
@@ -122,72 +122,11 @@
 					"\n",
 					"va_sales.head(3)"
 				],
-				"execution_count": 7
+				"execution_count": 5
 			},
 			{
 				"cell_type": "code",
 				"source": [
-					"fc_dates = fc_sales.select(col('RentalDate').alias('FcReleaseDate'), col('TransactionID'))\n",
-					"va_dates = va_sales.select(col('RentalDate').alias('VaRentalDate'), col('TransactionID'))\n",
-					"cs_dates = cs_sales.slect(col('OrderDate').alias('CSOrderDate'),col('OrderID'))\n",
-					"#cs_dates = cs_sales.select(*['id', 'releaseYear', 'availabilityDate', 'streamingAvailabilityDate'])\n",
-					"\n",
-					"joined_dates = sr_dates \\\n",
-					"  .join(fc_dates, F.upper(sr_dates.id) == fc_dates.OnlineMovieId, how='left') \\\n",
-					"  .join(va_dates, sr_dates.id == va_dates.OnlineMovieId, how='left')\n",
-					"\n",
-					"joined_dates \\\n",
-					"  .filter('FcReleaseDate is not null AND VaReleaseDate is not null') \\\n",
-					"  .limit(1) \\\n",
-					"  .collect()"
-				],
-				"execution_count": 11
-			},
-			{
-				"cell_type": "markdown",
-				"source": [
-					"### Looking at the dates\n",
-					"\n",
-					"```text\n",
-					"[Row(id='300e034e-4260-49ed-85e2-39a8d5030713',\n",
-					"    releaseYear=2015,\n",
-					"    availabilityDate='2017-07-25 00:00:00',\n",
-					"    streamingAvailabilityDate='2017-09-19 00:00:00',\n",
-					"    FcReleaseDate='07-25-2017',\n",
-					"    OnlineMovieId='300E034E-4260-49ED-85E2-39A8D5030713',\n",
-					"    VaReleaseDate='07-25-2017',\n",
-					"    OnlineMovieId='300e034e-4260-49ed-85e2-39a8d5030713')]\n",
-					"```\n",
-					"\n",
-					"Above, we see that:  \n",
-					"  - Southridge has recorded a 2015 releaseYear for this movie\n",
-					"  - Southridge has recorded that the movie is available as of 25 Jul 2017\n",
-					"  - Southridge has recorded that the movie is available for streaming as of 19 Sep 2017\n",
-					"  - Fourth Coffee has recorded that the movie has a ReleaseDate of 25 Jul 2017\n",
-					"  - VanArsdel, Ltd. has similarly recorded the ReleaseDate as 25 Jul 2017\n",
-					"\n",
-					"It looks like Fourth Coffee is tracking the \"release\" in terms of when it became available to rent. Only Southridge Video has tracked the original theatrical release year. This detail was useful for their web-based front-end, but the brick and mortar stores previously had no business need for it.\n",
-					"\n",
-					"Each of the source system has stored dates in different formats, but we will use true date types in our conformed intermediate schema."
-				]
-			},
-			{
-				"cell_type": "markdown",
-				"source": [
-					"> Note: We are not only parsing the dates here, but also adding a column to track the SourceSystemId"
-				]
-			},
-			{
-				"cell_type": "code",
-				"source": [
-					"fc_sales = fc_sales \\\n",
-					"  .withColumn('RentalDate', F.to_date(col('RentalDate'), 'MM-dd-yyyy')) \\\n",
-					"  .withColumn('SourceSystemId', F.lit('FC'))\n",
-					"\n",
-					"va_sales = va_sales \\\n",
-					"  .withColumn('RentalDate', F.to_date(col('RentalDate'), 'MM-dd-yyyy')) \\\n",
-					"  .withColumn('SourceSystemId', F.lit('VA'))\n",
-					"\n",
 					"cs_sales = cs_sales \\\n",
 					".withColumn('OrderDate',F.to_date(col('OrderDate'), 'MM-dd-yyyy')) \\\n",
 					".withColumn('SourceSystemId', F.lit('SR'))\n",
@@ -196,7 +135,41 @@
 					".withColumn('CreatedDate',F.to_date(col('CreatedDate'), 'MM-dd-yyyy')) \\\n",
 					".withColumn('SourceSystemId', F.lit('SR'))"
 				],
+				"execution_count": 6
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"cs_sales.head(1)\n",
+					""
+				],
+				"execution_count": 10
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"cstr_sales.head(1)"
+				],
 				"execution_count": 12
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"#exemple format date : 20170103\n",
+					"  \n",
+					"fc_sales = fc_sales \\\n",
+					"  .withColumn('RentalDate', F.to_date(col('RentalDate').cast(StringType), 'MM-dd-yyyy')) \\\n",
+					"  .withColumn('SourceSystemId', F.lit('FC'))\n",
+					"  "
+				],
+				"execution_count": 13
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"fc_sales.printSchema()"
+				],
+				"execution_count": 33
 			},
 			{
 				"cell_type": "markdown",
