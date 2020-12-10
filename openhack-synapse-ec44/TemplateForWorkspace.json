@@ -2198,12 +2198,16 @@
 						"sparkVersion": "2.4",
 						"nodeCount": 10,
 						"cores": 4,
-						"memory": 28
-					}
+						"memory": 28,
+						"extraHeader": {},
+						"automaticScaleJobs": false
+					},
+					"sessionKeepAliveTimeout": 30
 				},
 				"cells": [
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
 							"import uuid\n",
 							"import pyspark.sql.functions as F\n",
@@ -2215,12 +2219,14 @@
 					},
 					{
 						"cell_type": "markdown",
+						"metadata": {},
 						"source": [
-							"# Collect the raw Sales data from all three source systems"
+							"# Collect the raw Sales data from all source systems"
 						]
 					},
 					{
 						"cell_type": "markdown",
+						"metadata": {},
 						"source": [
 							"## From Cloud Sales\n",
 							""
@@ -2228,22 +2234,51 @@
 					},
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
 							"cs_orders = spark.read.csv(\"abfss://rawzone@openhackec44.dfs.core.windows.net/CloudSales/dboOrders.csv\", header='true', inferSchema='true')\n",
 							"cs_orderdetails = spark.read.csv(\"abfss://rawzone@openhackec44.dfs.core.windows.net/CloudSales/dboOrderDetails.csv\", header='true', inferSchema='true')\n",
+							"\n",
+							"cs_sales = cs_orders \\\n",
+							".join(cs_orderdetails, on='OrderId', how='left')\n",
+							"\n",
+							"cs_sales.head(5)\n",
+							"\n",
 							""
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 2
 					},
 					{
 						"cell_type": "markdown",
+						"metadata": {},
+						"source": [
+							"## From Cloud Streaming\n",
+							""
+						],
+						"attachments": {}
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"cstr_sales=spark.read.csv(\"abfss://rawzone@openhackec44.dfs.core.windows.net/CloudStreaming/dboTransactions.csv\",header='true',inferSchema='true')\n",
+							"cstr_sales.head(5)"
+						],
+						"attachments": {},
+						"outputs": [],
+						"execution_count": 3
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {},
 						"source": [
 							"## From Fourth Coffee"
 						]
 					},
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
 							"fc_movies = spark.read.csv(\"abfss://rawzone@openhackec44.dfs.core.windows.net/FouthCoffee/Movies.csv\", header='true', inferSchema='true')\n",
 							"fc_actors = spark.read.csv(\"abfss://rawzone@openhackec44.dfs.core.windows.net/FouthCoffee/Actors.csv\", header='true', inferSchema='true')\n",
@@ -2264,6 +2299,7 @@
 					},
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
 							"fc_catalog.head(10)"
 						],
@@ -2272,12 +2308,14 @@
 					},
 					{
 						"cell_type": "markdown",
+						"metadata": {},
 						"source": [
 							"## From VanArsdel"
 						]
 					},
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
 							"va_movies = spark.read.parquet(\"abfss://rawzone@openhackec44.dfs.core.windows.net/VanArsdelLTD/dboMovies.parquet\")\n",
 							"va_actors = spark.read.parquet(\"abfss://rawzone@openhackec44.dfs.core.windows.net/VanArsdelLTD/dboActors.parquet\")\n",
@@ -2298,6 +2336,7 @@
 					},
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
 							"va_catalog.head(5)"
 						],
@@ -2306,12 +2345,14 @@
 					},
 					{
 						"cell_type": "markdown",
+						"metadata": {},
 						"source": [
 							"## From Southridge"
 						]
 					},
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
 							"# After reading the JSON, explode the actors array to create multiple rows per movie, each having a single actor name\n",
 							"# Drop the original actors array, as it is then no longer needed\n",
@@ -2326,6 +2367,7 @@
 					},
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
 							"sr_catalog.head(5)\n",
 							""
@@ -2335,6 +2377,7 @@
 					},
 					{
 						"cell_type": "markdown",
+						"metadata": {},
 						"source": [
 							"# Observe inconsistencies in the data types and formats\n",
 							"\n",
@@ -2343,6 +2386,7 @@
 					},
 					{
 						"cell_type": "markdown",
+						"metadata": {},
 						"source": [
 							"## Release dates and availability dates\n",
 							"\n",
@@ -2353,6 +2397,7 @@
 					},
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
 							"fc_dates = fc_catalog.select(col('ReleaseDate').alias('FcReleaseDate'), col('MovieId'), col('OnlineMovieId'))\n",
 							"va_dates = va_catalog.select(col('ReleaseDate').alias('VaReleaseDate'), col('MovieId'), col('OnlineMovieId'))\n",
@@ -2372,6 +2417,7 @@
 					},
 					{
 						"cell_type": "markdown",
+						"metadata": {},
 						"source": [
 							"### Looking at the dates\n",
 							"\n",
@@ -2400,12 +2446,14 @@
 					},
 					{
 						"cell_type": "markdown",
+						"metadata": {},
 						"source": [
 							"> Note: We are not only parsing the dates here, but also adding a column to track the SourceSystemId"
 						]
 					},
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
 							"fc_catalog = fc_catalog \\\n",
 							"  .withColumn('ReleaseDate', F.to_date(col('ReleaseDate'), 'MM-dd-yyyy')) \\\n",
@@ -2425,6 +2473,7 @@
 					},
 					{
 						"cell_type": "markdown",
+						"metadata": {},
 						"source": [
 							"## Unioning the data\n",
 							"\n",
@@ -2473,6 +2522,7 @@
 					},
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
 							"# This is used in the following cells to create a new unique identifier\n",
 							"\n",
@@ -2483,6 +2533,7 @@
 					},
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
 							"sr_conformed = sr_catalog \\\n",
 							"  .select([ \\\n",
@@ -2506,6 +2557,7 @@
 					},
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
 							"# VanArsdel and Fourth Coffee are extremely similar\n",
 							"\n",
@@ -2548,6 +2600,7 @@
 					},
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
 							"# The full catalog is now a straightforward union\n",
 							"\n",
@@ -2559,6 +2612,7 @@
 					},
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
 							"# Let's rehydrate and confirm that everything checks out\n",
 							"\n",
