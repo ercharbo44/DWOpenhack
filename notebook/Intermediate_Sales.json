@@ -122,39 +122,15 @@
 					"\n",
 					"va_sales.head(3)"
 				],
-				"execution_count": 6
+				"execution_count": 7
 			},
 			{
 				"cell_type": "code",
 				"source": [
-					"va_catalog.head(5)"
-				],
-				"execution_count": 5
-			},
-			{
-				"cell_type": "markdown",
-				"source": [
-					"# Observe inconsistencies in the data types and formats\n",
-					"\n",
-					"Let's take a look at the following discrepencies which could cause fatal errors in downstream processing."
-				]
-			},
-			{
-				"cell_type": "markdown",
-				"source": [
-					"## Release dates and availability dates\n",
-					"\n",
-					"FourthCoffee and VanArsdel, Ltd. both seem to track the ReleaseDate for each movie. These are stored as strings, and we'll need to look into the formats they've used.\n",
-					"\n",
-					"Southridge Video is storing a releaseYear, an availabilityDate, and a streamingAvailabilityDate."
-				]
-			},
-			{
-				"cell_type": "code",
-				"source": [
-					"fc_dates = fc_catalog.select(col('ReleaseDate').alias('FcReleaseDate'), col('MovieId'), col('OnlineMovieId'))\n",
-					"va_dates = va_catalog.select(col('ReleaseDate').alias('VaReleaseDate'), col('MovieId'), col('OnlineMovieId'))\n",
-					"sr_dates = sr_catalog.select(*['id', 'releaseYear', 'availabilityDate', 'streamingAvailabilityDate'])\n",
+					"fc_dates = fc_sales.select(col('RentalDate').alias('FcReleaseDate'), col('TransactionID'))\n",
+					"va_dates = va_sales.select(col('RentalDate').alias('VaRentalDate'), col('TransactionID'))\n",
+					"cs_dates = cs_sales.slect(col('OrderDate').alias('CSOrderDate'),col('OrderID'))\n",
+					"#cs_dates = cs_sales.select(*['id', 'releaseYear', 'availabilityDate', 'streamingAvailabilityDate'])\n",
 					"\n",
 					"joined_dates = sr_dates \\\n",
 					"  .join(fc_dates, F.upper(sr_dates.id) == fc_dates.OnlineMovieId, how='left') \\\n",
@@ -204,18 +180,21 @@
 			{
 				"cell_type": "code",
 				"source": [
-					"fc_catalog = fc_catalog \\\n",
-					"  .withColumn('ReleaseDate', F.to_date(col('ReleaseDate'), 'MM-dd-yyyy')) \\\n",
+					"fc_sales = fc_sales \\\n",
+					"  .withColumn('RentalDate', F.to_date(col('RentalDate'), 'MM-dd-yyyy')) \\\n",
 					"  .withColumn('SourceSystemId', F.lit('FC'))\n",
 					"\n",
-					"va_catalog = va_catalog \\\n",
-					"  .withColumn('ReleaseDate', F.to_date(col('ReleaseDate'), 'MM-dd-yyyy')) \\\n",
+					"va_sales = va_sales \\\n",
+					"  .withColumn('RentalDate', F.to_date(col('RentalDate'), 'MM-dd-yyyy')) \\\n",
 					"  .withColumn('SourceSystemId', F.lit('VA'))\n",
 					"\n",
-					"sr_catalog = sr_catalog \\\n",
-					"  .withColumn('availabilityDate', F.to_date(col('availabilityDate'), 'yyyy-MM-dd HH:mm:ss')) \\\n",
-					"  .withColumn('streamingAvailabilityDate', F.to_date(col('streamingAvailabilityDate'), 'yyyy-MM-dd HH:mm:ss')) \\\n",
-					"  .withColumn('SourceSystemId', F.lit('SR'))"
+					"cs_sales = cs_sales \\\n",
+					".withColumn('OrderDate',F.to_date(col('OrderDate'), 'MM-dd-yyyy')) \\\n",
+					".withColumn('SourceSystemId', F.lit('SR'))\n",
+					"\n",
+					"cstr_sales = cstr_sales \\\n",
+					".withColumn('CreatedDate',F.to_date(col('CreatedDate'), 'MM-dd-yyyy')) \\\n",
+					".withColumn('SourceSystemId', F.lit('SR'))"
 				],
 				"execution_count": 12
 			},
