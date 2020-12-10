@@ -55,7 +55,7 @@
 			{
 				"cell_type": "markdown",
 				"source": [
-					"# Collect the raw Sales data from all three source systems"
+					"# Collect the raw Sales data from all source systems"
 				]
 			},
 			{
@@ -70,7 +70,27 @@
 				"source": [
 					"cs_orders = spark.read.csv(\"abfss://rawzone@openhackec44.dfs.core.windows.net/CloudSales/dboOrders.csv\", header='true', inferSchema='true')\n",
 					"cs_orderdetails = spark.read.csv(\"abfss://rawzone@openhackec44.dfs.core.windows.net/CloudSales/dboOrderDetails.csv\", header='true', inferSchema='true')\n",
+					"\n",
+					"cs_catalog = cs_orders \\\n",
+					".join(cs_orderdetails, on='OrderId', how='left')\n",
+					"\n",
+					"cs_sales.head(5)\n",
+					"\n",
 					""
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"## From Cloud Streaming\n",
+					""
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"cstr_sales=spark.read.csv(\"abfss://rawzone@openhackec44.dfs.core.windows.net/CloudStreaming/dboTransactions.csv\",header='true',inferSchema='true')"
 				],
 				"execution_count": null
 			},
