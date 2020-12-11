@@ -10,7 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"folderPath": "Normalized",
+				"folderPath": "Normalized/Rentals",
 				"fileSystem": "rawzone"
 			},
 			"compressionCodec": "snappy"
