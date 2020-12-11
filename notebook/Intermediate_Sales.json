@@ -107,7 +107,7 @@
 					"fc_sales = spark.read.csv(\"abfss://rawzone@openhackec44.dfs.core.windows.net/FouthCoffee/Transactions.csv\", header='true', inferSchema='true')\n",
 					"fc_sales.head(1)"
 				],
-				"execution_count": 4
+				"execution_count": 15
 			},
 			{
 				"cell_type": "markdown",
@@ -119,10 +119,10 @@
 				"cell_type": "code",
 				"source": [
 					"va_sales = spark.read.parquet(\"abfss://rawzone@openhackec44.dfs.core.windows.net/VanArsdelLTD/dboTransactions.parquet\")\n",
-					"\n",
-					"va_sales.head(3)"
+					"va_sales.printSchema()\n",
+					"va_sales.head(1)"
 				],
-				"execution_count": 5
+				"execution_count": 18
 			},
 			{
 				"cell_type": "code",
@@ -158,18 +158,18 @@
 					"#exemple format date : 20170103\n",
 					"  \n",
 					"fc_sales = fc_sales \\\n",
-					"  .withColumn('RentalDate', F.to_date(col('RentalDate').cast(StringType()), 'MM-dd-yyyy')) \\\n",
+					"  .withColumn('RentalDate', F.to_date((col('RentalDate').cast(StringType())), 'MM-dd-yyyy')) \\\n",
 					"  .withColumn('SourceSystemId', F.lit('FC'))\n",
 					"  "
 				],
-				"execution_count": 9
+				"execution_count": 16
 			},
 			{
 				"cell_type": "code",
 				"source": [
-					"fc_sales.printSchema()"
+					"fc_sales.head(1)"
 				],
-				"execution_count": 10
+				"execution_count": 17
 			},
 			{
 				"cell_type": "markdown",
