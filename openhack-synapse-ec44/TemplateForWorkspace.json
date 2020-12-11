@@ -2198,12 +2198,16 @@
 						"sparkVersion": "2.4",
 						"nodeCount": 10,
 						"cores": 4,
-						"memory": 28
-					}
+						"memory": 28,
+						"extraHeader": {},
+						"automaticScaleJobs": false
+					},
+					"sessionKeepAliveTimeout": 30
 				},
 				"cells": [
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
 							"import uuid\n",
 							"import pyspark.sql.functions as F\n",
@@ -2215,12 +2219,14 @@
 					},
 					{
 						"cell_type": "markdown",
+						"metadata": {},
 						"source": [
 							"# Collect the raw Sales data from all source systems"
 						]
 					},
 					{
 						"cell_type": "markdown",
+						"metadata": {},
 						"source": [
 							"## From Cloud Sales\n",
 							""
@@ -2228,6 +2234,7 @@
 					},
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
 							"cs_orders = spark.read.csv(\"abfss://rawzone@openhackec44.dfs.core.windows.net/CloudSales/dboOrders.csv\", header='true', inferSchema='true')\n",
 							"cs_orderdetails = spark.read.csv(\"abfss://rawzone@openhackec44.dfs.core.windows.net/CloudSales/dboOrderDetails.csv\", header='true', inferSchema='true')\n",
@@ -2244,6 +2251,7 @@
 					},
 					{
 						"cell_type": "markdown",
+						"metadata": {},
 						"source": [
 							"## From Cloud Streaming\n",
 							""
@@ -2251,6 +2259,7 @@
 					},
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
 							"cstr_sales=spark.read.csv(\"abfss://rawzone@openhackec44.dfs.core.windows.net/CloudStreaming/dboTransactions.csv\",header='true',inferSchema='true')\n",
 							"cstr_sales.head(5)"
@@ -2260,37 +2269,42 @@
 					},
 					{
 						"cell_type": "markdown",
+						"metadata": {},
 						"source": [
 							"## From Fourth Coffee"
 						]
 					},
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
 							"fc_sales = spark.read.csv(\"abfss://rawzone@openhackec44.dfs.core.windows.net/FouthCoffee/Transactions.csv\", header='true', inferSchema='true')\n",
 							"fc_sales.head(1)"
 						],
 						"outputs": [],
-						"execution_count": 4
+						"execution_count": 15
 					},
 					{
 						"cell_type": "markdown",
+						"metadata": {},
 						"source": [
 							"## From VanArsdel"
 						]
 					},
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
 							"va_sales = spark.read.parquet(\"abfss://rawzone@openhackec44.dfs.core.windows.net/VanArsdelLTD/dboTransactions.parquet\")\n",
-							"\n",
-							"va_sales.head(3)"
+							"va_sales.printSchema()\n",
+							"va_sales.head(1)"
 						],
 						"outputs": [],
-						"execution_count": 5
+						"execution_count": 18
 					},
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
 							"cs_sales = cs_sales \\\n",
 							".withColumn('OrderDate',F.to_date(col('OrderDate'), 'MM-dd-yyyy')) \\\n",
@@ -2305,44 +2319,49 @@
 					},
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
 							"cs_sales.head(1)\n",
 							""
 						],
 						"outputs": [],
-						"execution_count": 10
+						"execution_count": 7
 					},
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
 							"cstr_sales.head(1)"
 						],
 						"outputs": [],
-						"execution_count": 12
+						"execution_count": 8
 					},
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
 							"#exemple format date : 20170103\n",
 							"  \n",
 							"fc_sales = fc_sales \\\n",
-							"  .withColumn('RentalDate', F.to_date(col('RentalDate').cast(StringType), 'MM-dd-yyyy')) \\\n",
+							"  .withColumn('RentalDate', F.to_date((col('RentalDate').cast(StringType())), 'MM-dd-yyyy')) \\\n",
 							"  .withColumn('SourceSystemId', F.lit('FC'))\n",
 							"  "
 						],
 						"outputs": [],
-						"execution_count": 13
+						"execution_count": 16
 					},
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
-							"fc_sales.printSchema()"
+							"fc_sales.head(1)"
 						],
 						"outputs": [],
-						"execution_count": 33
+						"execution_count": 17
 					},
 					{
 						"cell_type": "markdown",
+						"metadata": {},
 						"source": [
 							"## Unioning the data\n",
 							"\n",
@@ -2391,6 +2410,7 @@
 					},
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
 							"# This is used in the following cells to create a new unique identifier\n",
 							"\n",
@@ -2401,6 +2421,7 @@
 					},
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
 							"sr_conformed = sr_catalog \\\n",
 							"  .select([ \\\n",
@@ -2424,6 +2445,7 @@
 					},
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
 							"# VanArsdel and Fourth Coffee are extremely similar\n",
 							"\n",
@@ -2466,6 +2488,7 @@
 					},
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
 							"# The full catalog is now a straightforward union\n",
 							"\n",
@@ -2477,6 +2500,7 @@
 					},
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
 							"# Let's rehydrate and confirm that everything checks out\n",
 							"\n",
