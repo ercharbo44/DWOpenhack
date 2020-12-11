@@ -1,0 +1,77 @@
+{
+	"name": "Rentals",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "openhack-synapse-ec44-WorkspaceDefaultStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "Normalized",
+				"fileSystem": "rawzone"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": [
+			{
+				"name": "SourceSystemId",
+				"type": "UTF8"
+			},
+			{
+				"name": "SourceSystemMovieId",
+				"type": "UTF8"
+			},
+			{
+				"name": "SouthridgeMovieId",
+				"type": "UTF8"
+			},
+			{
+				"name": "PhysicalAvailabilityDate",
+				"type": "INT96"
+			},
+			{
+				"name": "StreamingAvailabilityDate",
+				"type": "INT96"
+			},
+			{
+				"name": "Genre",
+				"type": "UTF8"
+			},
+			{
+				"name": "Title",
+				"type": "UTF8"
+			},
+			{
+				"name": "Rating",
+				"type": "UTF8"
+			},
+			{
+				"name": "RuntimeMinutes",
+				"type": "INT64"
+			},
+			{
+				"name": "TheatricalReleaseYear",
+				"type": "INT64"
+			},
+			{
+				"name": "ActorName",
+				"type": "UTF8"
+			},
+			{
+				"name": "ActorId",
+				"type": "UTF8"
+			},
+			{
+				"name": "ActorGender",
+				"type": "UTF8"
+			},
+			{
+				"name": "CatalogId",
+				"type": "UTF8"
+			}
+		]
+	}
+}
