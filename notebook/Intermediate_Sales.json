@@ -143,14 +143,14 @@
 					"cs_sales.head(1)\n",
 					""
 				],
-				"execution_count": 10
+				"execution_count": 7
 			},
 			{
 				"cell_type": "code",
 				"source": [
 					"cstr_sales.head(1)"
 				],
-				"execution_count": 12
+				"execution_count": 8
 			},
 			{
 				"cell_type": "code",
@@ -158,18 +158,18 @@
 					"#exemple format date : 20170103\n",
 					"  \n",
 					"fc_sales = fc_sales \\\n",
-					"  .withColumn('RentalDate', F.to_date(col('RentalDate').cast(StringType), 'MM-dd-yyyy')) \\\n",
+					"  .withColumn('RentalDate', F.to_date(col('RentalDate').cast(StringType()), 'MM-dd-yyyy')) \\\n",
 					"  .withColumn('SourceSystemId', F.lit('FC'))\n",
 					"  "
 				],
-				"execution_count": 13
+				"execution_count": 9
 			},
 			{
 				"cell_type": "code",
 				"source": [
 					"fc_sales.printSchema()"
 				],
-				"execution_count": 33
+				"execution_count": 10
 			},
 			{
 				"cell_type": "markdown",
