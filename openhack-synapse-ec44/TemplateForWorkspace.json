@@ -49,6 +49,15 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('workspaceName'), '/openhackdec44')]",
+			"type": "Microsoft.Synapse/workspaces/sqlPools",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/CopyPipeline_CloudSales')]",
 			"type": "Microsoft.Synapse/workspaces/pipelines",
 			"apiVersion": "2019-06-01-preview",
@@ -979,8 +988,7 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('workspaceId'), '/dataflows/SalesOrders')]",
-				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+				"[concat(variables('workspaceId'), '/dataflows/SalesOrders')]"
 			]
 		},
 		{
@@ -2438,6 +2446,44 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/DimActors')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "CREATE TABLE [dbo].[DimActors] (\n    [ActorSK]     INT              NOT NULL,\n    [ActorID]     UNIQUEIDENTIFIER NOT NULL,\n    [ActorName]   VARCHAR (81)     NOT NULL,\n    [ActorGender] CHAR (1)         NOT NULL\n)\nWITH (HEAP, DISTRIBUTION = REPLICATE);",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"name": "openhackdec44",
+						"type": "SqlCompute"
+					}
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/DimMoviesActors')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "CREATE TABLE [dbo].[DimMovieActors] (\n    [MovieID] UNIQUEIDENTIFIER NOT NULL,\n    [ActorID] UNIQUEIDENTIFIER NOT NULL\n)\nWITH (HEAP, DISTRIBUTION = REPLICATE);\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"name": "openhackdec44",
+						"type": "SqlPool"
+					}
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/SQL script 1')]",
 			"type": "Microsoft.Synapse/workspaces/sqlscripts",
 			"apiVersion": "2019-06-01-preview",
@@ -2482,6 +2528,25 @@
 			"properties": {
 				"content": {
 					"query": "-- This is auto-generated code\nSELECT\n    TOP 100 *\nFROM\n    OPENROWSET(\n        BULK 'https://openhackec44.dfs.core.windows.net/rawzone/CloudSales/dboOrders.csv',\n        FORMAT = 'CSV',\n        PARSER_VERSION='2.0'\n    ) AS [result]\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"name": "master",
+						"type": "SqlOnDemand"
+					}
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SQL script 4')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "SELECT\n    TOP 100 *\nFROM\n    OPENROWSET(\n        BULK 'https://openhackec44.dfs.core.windows.net/rawzone/Normalized/catalog/part-00000-8017eaec-d3b9-400f-bb36-eb4e499fc6dd-c000.snappy.parquet',\n        FORMAT='PARQUET'\n    ) AS [result]\r\n",
 					"metadata": {
 						"language": "sql"
 					},
@@ -3341,34 +3406,6 @@
 						"execution_count": null
 					}
 				]
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/openhackpool')]",
-			"type": "Microsoft.Synapse/workspaces/sqlPools",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"annotations": []
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/SQL script 4')]",
-			"type": "Microsoft.Synapse/workspaces/sqlscripts",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"content": {
-					"query": "SELECT\n    TOP 100 *\nFROM\n    OPENROWSET(\n        BULK 'https://openhackec44.dfs.core.windows.net/rawzone/Normalized/catalog/part-00000-8017eaec-d3b9-400f-bb36-eb4e499fc6dd-c000.snappy.parquet',\n        FORMAT='PARQUET'\n    ) AS [result]\r\n",
-					"metadata": {
-						"language": "sql"
-					},
-					"currentConnection": {
-						"name": "master",
-						"type": "SqlOnDemand"
-					}
-				},
-				"type": "SqlQuery"
 			},
 			"dependsOn": []
 		}
