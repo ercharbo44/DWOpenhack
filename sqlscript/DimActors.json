@@ -2,7 +2,7 @@
 	"name": "DimActors",
 	"properties": {
 		"content": {
-			"query": "CREATE TABLE [dbo].[DimActors] (\n    [ActorSK]     INT              NOT NULL,\n    [ActorID]     UNIQUEIDENTIFIER NOT NULL,\n    [ActorName]   VARCHAR (81)     NOT NULL,\n    [ActorGender] CHAR (1)         NOT NULL\n)\nWITH (HEAP, DISTRIBUTION = REPLICATE);",
+			"query": "DROP TABLE dbo.DimActors;\n\nCREATE TABLE [dbo].[DimActors] (\n    [ActorSK]     INT              NOT NULL,\n    [ActorID]     UNIQUEIDENTIFIER,\n    [ActorName]   VARCHAR (81)     NOT NULL,\n    [ActorGender] CHAR (1)  \n)\nWITH (HEAP, DISTRIBUTION = REPLICATE);",
 			"metadata": {
 				"language": "sql"
 			},
