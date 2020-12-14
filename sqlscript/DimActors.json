@@ -1,0 +1,16 @@
+{
+	"name": "DimActors",
+	"properties": {
+		"content": {
+			"query": "CREATE TABLE [dbo].[DimActors] (\n    [ActorSK]     INT              NOT NULL,\n    [ActorID]     UNIQUEIDENTIFIER NOT NULL,\n    [ActorName]   VARCHAR (81)     NOT NULL,\n    [ActorGender] CHAR (1)         NOT NULL\n)\nWITH (HEAP, DISTRIBUTION = REPLICATE);",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"name": "openhackdec44",
+				"type": "SqlPool"
+			}
+		},
+		"type": "SqlQuery"
+	}
+}

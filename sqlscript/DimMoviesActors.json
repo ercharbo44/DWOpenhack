@@ -1,0 +1,16 @@
+{
+	"name": "DimMoviesActors",
+	"properties": {
+		"content": {
+			"query": "CREATE TABLE [dbo].[DimMovieActors] (\n    [MovieID] UNIQUEIDENTIFIER NOT NULL,\n    [ActorID] UNIQUEIDENTIFIER NOT NULL\n)\nWITH (HEAP, DISTRIBUTION = REPLICATE);\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"name": "openhackdec44",
+				"type": "SqlPool"
+			}
+		},
+		"type": "SqlQuery"
+	}
+}
