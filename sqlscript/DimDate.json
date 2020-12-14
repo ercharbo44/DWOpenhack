@@ -1,0 +1,16 @@
+{
+	"name": "DimDate",
+	"properties": {
+		"content": {
+			"query": "CREATE TABLE [dbo].[DimDate] (\n    [DateSK]         INT      NOT NULL,\n    [DateValue]      DATE     NOT NULL,\n    [DateYear]       SMALLINT NOT NULL,\n    [DateMonth]      TINYINT  NOT NULL,\n    [DateDay]        TINYINT  NOT NULL,\n    [DateDayOfWeek]  TINYINT  NOT NULL,\n    [DateDayOfYear]  SMALLINT NOT NULL,\n    [DateWeekOfYear] TINYINT  NOT NULL\n)\nWITH (HEAP, DISTRIBUTION = REPLICATE);",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"name": "openhackdec44",
+				"type": "SqlPool"
+			}
+		},
+		"type": "SqlQuery"
+	}
+}

@@ -1,0 +1,16 @@
+{
+	"name": "DimCustomers",
+	"properties": {
+		"content": {
+			"query": "CREATE TABLE [dbo].[DimCustomers] (\n    [CustomerSK]      INT              NOT NULL,\n    [CustomerID]      UNIQUEIDENTIFIER NOT NULL,\n    [LastName]        VARCHAR (50)     NOT NULL,\n    [FirstName]       VARCHAR (30)     NOT NULL,\n    [AddressLine1]    VARCHAR (50)     NOT NULL,\n    [AddressLine2]    VARCHAR (50)     NULL,\n    [City]            VARCHAR (30)     NOT NULL,\n    [State]           CHAR (2)         NOT NULL,\n    [ZipCode]         CHAR (5)         NOT NULL,\n    [PhoneNumber]     CHAR (10)        NOT NULL,\n    [RecordStartDate] DATE             NOT NULL,\n    [RecordEndDate]   DATE             NULL,\n    [ActiveFlag]      BIT              NOT NULL\n)\nWITH (CLUSTERED COLUMNSTORE INDEX, DISTRIBUTION = HASH([CustomerSK]));\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"name": "openhackdec44",
+				"type": "SqlPool"
+			}
+		},
+		"type": "SqlQuery"
+	}
+}

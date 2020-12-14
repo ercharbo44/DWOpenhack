@@ -1,0 +1,16 @@
+{
+	"name": "DimLocation",
+	"properties": {
+		"content": {
+			"query": "CREATE TABLE [dbo].[DimLocation] (\n    [LocationSK]   SMALLINT     NOT NULL,\n    [LocationName] VARCHAR (50) NOT NULL,\n    [Streaming]    BIT          NOT NULL,\n    [Rentals]      BIT          NOT NULL,\n    [Sales]        BIT          NOT NULL\n)\nWITH (HEAP, DISTRIBUTION = REPLICATE);",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"name": "openhackdec44",
+				"type": "SqlPool"
+			}
+		},
+		"type": "SqlQuery"
+	}
+}

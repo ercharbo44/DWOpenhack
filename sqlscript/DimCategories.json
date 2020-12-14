@@ -1,0 +1,16 @@
+{
+	"name": "DimCategories",
+	"properties": {
+		"content": {
+			"query": "CREATE TABLE [dbo].[DimCategories] (\n    [MovieCategorySK]          TINYINT      NOT NULL,\n    [MovieCategoryDescription] VARCHAR (50) NOT NULL\n)\nWITH (HEAP, DISTRIBUTION = REPLICATE);\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"name": "openhackdec44",
+				"type": "SqlPool"
+			}
+		},
+		"type": "SqlQuery"
+	}
+}

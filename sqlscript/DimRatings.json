@@ -1,0 +1,16 @@
+{
+	"name": "DimRatings",
+	"properties": {
+		"content": {
+			"query": "CREATE TABLE [dbo].[DimRatings] (\n    [MovieRatingSK]          TINYINT     NOT NULL,\n    [MovieRatingDescription] VARCHAR (5) NOT NULL\n)\nWITH (HEAP, DISTRIBUTION = REPLICATE);",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"name": "openhackdec44",
+				"type": "SqlPool"
+			}
+		},
+		"type": "SqlQuery"
+	}
+}
