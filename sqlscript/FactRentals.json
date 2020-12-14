@@ -1,0 +1,16 @@
+{
+	"name": "FactRentals",
+	"properties": {
+		"content": {
+			"query": "CREATE TABLE [dbo].[FactRentals] (\n    [RentalSK]       INT              NOT NULL,\n    [TransactionID]  UNIQUEIDENTIFIER NOT NULL,\n    [CustomerSK]     INT              NOT NULL,\n    [LocationSK]     SMALLINT         NOT NULL,\n    [MovieSK]        INT              NOT NULL,\n    [RentalDateSK]   INT              NOT NULL,\n    [ReturnDateSK]   INT              NULL,\n    [RentalDuration] TINYINT          NULL,\n    [RentalCost]     MONEY            NOT NULL,\n    [LateFee]        MONEY            NULL,\n    [TotalCost]      MONEY            NULL,\n    [RewindFlag]     BIT              NULL\n)\nWITH (CLUSTERED COLUMNSTORE INDEX, DISTRIBUTION = HASH([CustomerSK]));\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"name": "openhackdec44",
+				"type": "SqlPool"
+			}
+		},
+		"type": "SqlQuery"
+	}
+}

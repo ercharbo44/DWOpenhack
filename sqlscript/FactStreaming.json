@@ -1,0 +1,16 @@
+{
+	"name": "FactStreaming",
+	"properties": {
+		"content": {
+			"query": "CREATE TABLE [dbo].[FactStreaming] (\n    [StreamingSK]       INT              NOT NULL,\n    [TransactionID]     UNIQUEIDENTIFIER NOT NULL,\n    [CustomerSK]        INT              NOT NULL,\n    [MovieSK]           INT              NOT NULL,\n    [StreamStartDateSK] INT              NOT NULL,\n    [StreamStartTimeSK] INT              NOT NULL,\n    [StreamEndDateSK]   INT              NULL,\n    [StreamEndTimeSK]   INT              NULL,\n    [StreamDurationSec] INT              NULL,\n    [StreamDurationMin] DECIMAL (10, 4)  NULL\n)\nWITH (CLUSTERED COLUMNSTORE INDEX, DISTRIBUTION = HASH([CustomerSK]));",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"name": "openhackdec44",
+				"type": "SqlPool"
+			}
+		},
+		"type": "SqlQuery"
+	}
+}
