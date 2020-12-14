@@ -1,0 +1,16 @@
+{
+	"name": "CreateNumber",
+	"properties": {
+		"content": {
+			"query": "CREATE TABLE [dbo].[Numbers] (\n    [Number] INT NOT NULL\n) \nWITH (Clustered Columnstore Index, DISTRIBUTION = REPLICATE);",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"name": "master",
+				"type": "SqlOnDemand"
+			}
+		},
+		"type": "SqlQuery"
+	}
+}
