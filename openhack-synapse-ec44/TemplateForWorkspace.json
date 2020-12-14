@@ -2647,7 +2647,7 @@
 					},
 					"currentConnection": {
 						"name": "openhackdec44",
-						"type": "SqlCompute"
+						"type": "SqlPool"
 					}
 				},
 				"type": "SqlQuery"
@@ -2724,6 +2724,25 @@
 					"currentConnection": {
 						"name": "master",
 						"type": "SqlOnDemand"
+					}
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SQL script 5')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "Create external data source ADLSHack2\nWITH \n( LOCATION = 'abfss://rawzone@openhackec44.dfs.core.windows.net',\n\tTYPE = HADOOP\n)\n\nCREATE EXTERNAL FILE FORMAT csv\nWith\n( FORMAT_TYPE = DELIMITEDTEXT,\n  FORMAT_OPTIONS (\n\tFIELD_TERMINATOR = '|'\n    )\n)\n\nCREATE EXTERNAL FILE FORMAT Parquet WITH (FORMAT_TYPE = PARQUET)\nGO\n\n\nDROP external table ext_catalog\nCREATE EXTERNAL TABLE ext_catalog\n(\n        [SourceSystemId] VARCHAR(2),\n\t\t[SourceSystemMovieId] VARCHAR(38),\n\t\t[SouthridgeMovieId] VARCHAR(38),\n\t\t[PhysicalAvailabilityDate] DATETIME,\n\t\t[StreamingAvailabilityDate] DATETIME,\n\t\t[Genre] VARCHAR(50),\n\t\t[Title] VARCHAR(255),\n\t\t[Rating] VARCHAR(10),\n\t\t[RuntimeMinutes] BIGINT,\n\t\t[TheatricalReleaseYear] BIGINT,\n        [ActorName] VARCHAR(100),\n\t\t[ActorId] VARCHAR(38),\n        [ActorGender] CHAR(1),\n\t\t[CatalogId] VARCHAR(38)\n)\nWITH\n(\n    LOCATION = N'Normalized/catalog',\n    DATA_SOURCE = ADLSHack2,\n    FILE_FORMAT = Parquet,\n    REJECT_TYPE = VALUE,\n    REJECT_VALUE = 0\n)\nGO\n\nselect top 5 * from ext_catalog\n\nINSERT INTO dimActors\n\tSELECT ActorID,ActorName,ActorGender from ext_dimproduct",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"name": "openhackdec44",
+						"type": "SqlCompute"
 					}
 				},
 				"type": "SqlQuery"
