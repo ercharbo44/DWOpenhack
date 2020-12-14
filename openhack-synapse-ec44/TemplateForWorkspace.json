@@ -2457,7 +2457,83 @@
 					},
 					"currentConnection": {
 						"name": "openhackdec44",
+						"type": "SqlPool"
+					}
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/DimCategories')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "CREATE TABLE [dbo].[DimCategories] (\n    [MovieCategorySK]          TINYINT      NOT NULL,\n    [MovieCategoryDescription] VARCHAR (50) NOT NULL\n)\nWITH (HEAP, DISTRIBUTION = REPLICATE);\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"name": "openhackdec44",
 						"type": "SqlCompute"
+					}
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/DimCustomers')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "CREATE TABLE [dbo].[DimCustomers] (\n    [CustomerSK]      INT              NOT NULL,\n    [CustomerID]      UNIQUEIDENTIFIER NOT NULL,\n    [LastName]        VARCHAR (50)     NOT NULL,\n    [FirstName]       VARCHAR (30)     NOT NULL,\n    [AddressLine1]    VARCHAR (50)     NOT NULL,\n    [AddressLine2]    VARCHAR (50)     NULL,\n    [City]            VARCHAR (30)     NOT NULL,\n    [State]           CHAR (2)         NOT NULL,\n    [ZipCode]         CHAR (5)         NOT NULL,\n    [PhoneNumber]     CHAR (10)        NOT NULL,\n    [RecordStartDate] DATE             NOT NULL,\n    [RecordEndDate]   DATE             NULL,\n    [ActiveFlag]      BIT              NOT NULL\n)\nWITH (CLUSTERED COLUMNSTORE INDEX, DISTRIBUTION = HASH([CustomerSK]));\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"name": "openhackdec44",
+						"type": "SqlCompute"
+					}
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/DimDate')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "CREATE TABLE [dbo].[DimDate] (\n    [DateSK]         INT      NOT NULL,\n    [DateValue]      DATE     NOT NULL,\n    [DateYear]       SMALLINT NOT NULL,\n    [DateMonth]      TINYINT  NOT NULL,\n    [DateDay]        TINYINT  NOT NULL,\n    [DateDayOfWeek]  TINYINT  NOT NULL,\n    [DateDayOfYear]  SMALLINT NOT NULL,\n    [DateWeekOfYear] TINYINT  NOT NULL\n)\nWITH (HEAP, DISTRIBUTION = REPLICATE);",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"name": "openhackdec44",
+						"type": "SqlCompute"
+					}
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/DimLocation')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "CREATE TABLE [dbo].[DimLocation] (\n    [LocationSK]   SMALLINT     NOT NULL,\n    [LocationName] VARCHAR (50) NOT NULL,\n    [Streaming]    BIT          NOT NULL,\n    [Rentals]      BIT          NOT NULL,\n    [Sales]        BIT          NOT NULL\n)\nWITH (HEAP, DISTRIBUTION = REPLICATE);",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"name": "openhackdec44",
+						"type": "SqlPool"
 					}
 				},
 				"type": "SqlQuery"
@@ -2471,6 +2547,44 @@
 			"properties": {
 				"content": {
 					"query": "CREATE TABLE [dbo].[DimMovieActors] (\n    [MovieID] UNIQUEIDENTIFIER NOT NULL,\n    [ActorID] UNIQUEIDENTIFIER NOT NULL\n)\nWITH (HEAP, DISTRIBUTION = REPLICATE);\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"name": "openhackdec44",
+						"type": "SqlPool"
+					}
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/DimRatings')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "CREATE TABLE [dbo].[DimRatings] (\n    [MovieRatingSK]          TINYINT     NOT NULL,\n    [MovieRatingDescription] VARCHAR (5) NOT NULL\n)\nWITH (HEAP, DISTRIBUTION = REPLICATE);",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"name": "openhackdec44",
+						"type": "SqlPool"
+					}
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/DimTime')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "CREATE TABLE [dbo].[DimTime] (\n    [TimeSK]          INT      NOT NULL,\n    [TimeValue]       TIME (7) NOT NULL,\n    [TimeHour]        TINYINT  NOT NULL,\n    [TimeMinute]      TINYINT  NOT NULL,\n    [TimeSecond]      TINYINT  NOT NULL,\n    [TimeMinuteOfDay] SMALLINT NOT NULL,\n    [TimeSecondOfDay] INT      NOT NULL\n)\nWITH (HEAP, DISTRIBUTION = REPLICATE);",
 					"metadata": {
 						"language": "sql"
 					},
