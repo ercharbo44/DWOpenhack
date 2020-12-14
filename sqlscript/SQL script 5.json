@@ -1,0 +1,16 @@
+{
+	"name": "SQL script 5",
+	"properties": {
+		"content": {
+			"query": "CREATE EXTERNAL FILE FORMAT csv\nWith\n( FORMAT_TYPE = DELIMITEDTEXT,\n  FORMAT_OPTIONS (\n\tFIELD_TERMINATOR = '|'\n    )\n)\n\nDROP external table ext_dimActors\nCREATE EXTERNAL TABLE ext_dimActors\n(\n    [ActorSK] [int] NOT NULL,\n\t[ActorID] [UNIQUEIDENTIFIER] NOT NULL,\n\t[ActorName] [VARCHAR](81) NULL,\n\t[ActorGender] [char](1) NULL\n)\nWITH\n LOCATION = 'dimproduct',\n    DATA_SOURCE = ADLSHack2,\n    FILE_FORMAT = csv,\n    REJECT_TYPE = VALUE,\n    REJECT_VALUE = 0    \n)\nGO",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"name": "openhackdec44",
+				"type": "SqlPool"
+			}
+		},
+		"type": "SqlQuery"
+	}
+}
