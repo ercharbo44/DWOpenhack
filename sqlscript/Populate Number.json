@@ -7,8 +7,8 @@
 				"language": "sql"
 			},
 			"currentConnection": {
-				"name": "master",
-				"type": "SqlOnDemand"
+				"name": "openhackdec44",
+				"type": "SqlPool"
 			}
 		},
 		"type": "SqlQuery"
