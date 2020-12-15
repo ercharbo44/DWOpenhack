@@ -2426,7 +2426,7 @@
 							"name": "Select2"
 						}
 					],
-					"script": "source(output(\n\t\tOrderID as string,\n\t\tCustomerID as string,\n\t\tOrderDate as date,\n\t\tShipDate as date,\n\t\tTotalCost as float,\n\t\tCreatedDate as date,\n\t\tUpdatedDate as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> Salescloud\nsource(output(\n\t\tOrderDetailID as string,\n\t\tOrderID as string,\n\t\tMovieID as string,\n\t\tQuantity as integer,\n\t\tUnitCost as float,\n\t\tLineNumber as integer,\n\t\tCreatedDate as string,\n\t\tUpdatedDate as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> DetailCloud\nSelectorderfields, Select1 join(Selectorderfields@OrderID == Select1@OrderID,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> Join1\nJoin1 derive(SourcedID = 1,\n\t\tUniqueOrderID = concat('1', OrderDetailID),\n\t\tUniqueMovieID = concat('1',MovieID),\n\t\tUniqueCustomerID = concat('1',CustomerID)) ~> DerivedColumn1\nSalescloud select(mapColumn(\n\t\tOrderID,\n\t\tCustomerID,\n\t\tOrderDate,\n\t\tShipDate,\n\t\tTotalCost\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Selectorderfields\nDetailCloud select(mapColumn(\n\t\tOrderDetailID,\n\t\tOrderID,\n\t\tMovieID,\n\t\tQuantity,\n\t\tUnitCost,\n\t\tLineNumber\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\nDerivedColumn1 select(mapColumn(\n\t\tSourceID = SourcedID,\n\t\tUniqueOrderID,\n\t\tOrderID = Select1@OrderID,\n\t\tShipDate = OrderDetailID,\n\t\tTotalCost,\n\t\tOrderDetailID,\n\t\tUniqueMovieID,\n\t\tMovieID,\n\t\tQuantity,\n\t\tUnitCost,\n\t\tLineNumber,\n\t\tCustomerID,\n\t\tUniqueCustomerID,\n\t\tOrderDate,\n\t\tShipDate,\n\t\tTotalCost\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select2\nSelect2 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'parquet',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Ordersdetail"
+					"script": "source(output(\n\t\tOrderID as string,\n\t\tCustomerID as string,\n\t\tOrderDate as date,\n\t\tShipDate as date,\n\t\tTotalCost as float,\n\t\tCreatedDate as date,\n\t\tUpdatedDate as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> Salescloud\nsource(output(\n\t\tOrderDetailID as string,\n\t\tOrderID as string,\n\t\tMovieID as string,\n\t\tQuantity as integer,\n\t\tUnitCost as float,\n\t\tLineNumber as integer,\n\t\tCreatedDate as string,\n\t\tUpdatedDate as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> DetailCloud\nSelectorderfields, Select1 join(Selectorderfields@OrderID == Select1@OrderID,\n\tjoinType:'left',\n\tbroadcast: 'auto')~> Join1\nJoin1 derive(SourcedID = 1,\n\t\tUniqueOrderID = concat('1', OrderDetailID),\n\t\tUniqueMovieID = concat('1',MovieID),\n\t\tUniqueCustomerID = concat('1',CustomerID)) ~> DerivedColumn1\nSalescloud select(mapColumn(\n\t\tOrderID,\n\t\tCustomerID,\n\t\tOrderDate,\n\t\tShipDate,\n\t\tTotalCost\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Selectorderfields\nDetailCloud select(mapColumn(\n\t\tOrderDetailID,\n\t\tOrderID,\n\t\tMovieID,\n\t\tQuantity,\n\t\tUnitCost,\n\t\tLineNumber\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\nDerivedColumn1 select(mapColumn(\n\t\tSourceID = SourcedID,\n\t\tUniqueOrderID,\n\t\tOrderID = Select1@OrderID,\n\t\tShipDate = OrderDetailID,\n\t\tTotalCost,\n\t\tOrderDetailID,\n\t\tUniqueMovieID,\n\t\tMovieID,\n\t\tQuantity,\n\t\tUnitCost,\n\t\tLineNumber,\n\t\tCustomerID,\n\t\tUniqueCustomerID,\n\t\tOrderDate,\n\t\tShipDate,\n\t\tTotalCost\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select2\nSelect2 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'parquet',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Ordersdetail"
 				}
 			},
 			"dependsOn": [
@@ -2446,12 +2446,31 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/CreateNumber')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "CREATE TABLE [dbo].[Numbers] (\n    [Number] INT NOT NULL\n) \nWITH (Clustered Columnstore Index, DISTRIBUTION = REPLICATE);",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"name": "master",
+						"type": "SqlOnDemand"
+					}
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/DimActors')]",
 			"type": "Microsoft.Synapse/workspaces/sqlscripts",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
 				"content": {
-					"query": "CREATE TABLE [dbo].[DimActors] (\n    [ActorSK]     INT              NOT NULL,\n    [ActorID]     UNIQUEIDENTIFIER NOT NULL,\n    [ActorName]   VARCHAR (81)     NOT NULL,\n    [ActorGender] CHAR (1)         NOT NULL\n)\nWITH (HEAP, DISTRIBUTION = REPLICATE);",
+					"query": "DROP TABLE dbo.DimActors;\n\nCREATE TABLE [dbo].[DimActors] (\n    [ActorSK]     INT              NOT NULL,\n    [ActorID]     UNIQUEIDENTIFIER,\n    [ActorName]   VARCHAR (81)     NOT NULL,\n    [ActorGender] CHAR (1)  \n)\nWITH (HEAP, DISTRIBUTION = REPLICATE);",
 					"metadata": {
 						"language": "sql"
 					},
@@ -2655,18 +2674,18 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('workspaceName'), '/SQL script 1')]",
+			"name": "[concat(parameters('workspaceName'), '/Populate DimDate')]",
 			"type": "Microsoft.Synapse/workspaces/sqlscripts",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
 				"content": {
-					"query": "-- This is auto-generated code\nSELECT\n    TOP 100 *\nFROM\n    OPENROWSET(\n        BULK 'https://openhackec44.dfs.core.windows.net/rawzone/CloudSales/dboOrders.csv',\n        FORMAT = 'CSV',\n        PARSER_VERSION='2.0'\n    ) AS [result]\n",
+					"query": "INSERT INTO dbo.DimDate\n(DateSK, DateValue, DateYear, DateMonth, DateDay, DateDayOfWeek, DateDayOfYear, DateWeekOfYear)\nSELECT \n\tNumber AS DateSK,\n\tDateValue, \n\tYEAR(DateValue) AS DateYear,\n\tMONTH(DateValue) AS DateMonth,\n\tDAY(DateValue) AS DateDay,\n\tDATEPART(WeekDay, DateValue) AS DateDayOfWeek,\n\tDATEPART(DayOfYear, DateValue) AS DateDayOfYear,\n\tDATEPART(Week, DateValue) AS DateWeekOfYear\nFROM\n(\n\tSELECT Number, DATEADD(d, Number - 1, '2017-01-01') AS DateValue\n\tFROM\n\t(\n\t\tSELECT Number\n\t\tFROM dbo.Numbers\n\t\tWHERE Number <= 365\n\t) AS N\n) AS D;\n",
 					"metadata": {
 						"language": "sql"
 					},
 					"currentConnection": {
-						"name": "master",
-						"type": "SqlOnDemand"
+						"name": "openhackdec44",
+						"type": "SqlPool"
 					}
 				},
 				"type": "SqlQuery"
@@ -2674,37 +2693,18 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('workspaceName'), '/SQL script 2')]",
+			"name": "[concat(parameters('workspaceName'), '/Populate Number')]",
 			"type": "Microsoft.Synapse/workspaces/sqlscripts",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
 				"content": {
-					"query": "-- This is auto-generated code\nSELECT\n    TOP 100 *\nFROM\n    OPENROWSET(\n        BULK 'https://openhackec44.dfs.core.windows.net/rawzone/CloudSales/dboOrderDetails.csv',\n        FORMAT = 'CSV',\n        PARSER_VERSION='2.0'\n    ) AS [result]\n",
+					"query": "-- Declare local variables...\nDECLARE\n\t@MaxNumber integer = 1;\n\n-- Insert the seed number...\nINSERT INTO dbo.Numbers\n(Number)\nVALUES\n(1);\n\n-- Loop through and insert additional data up to 1,048,576...\nWHILE (@MaxNumber < 1000000)\nBEGIN\n\tINSERT INTO dbo.Numbers\n\t(Number)\n\tSELECT Number + @MaxNumber\n\tFROM dbo.Numbers;\n\n\tSELECT @MaxNumber = MAX(Number)\n\tFROM dbo.Numbers;\nEND",
 					"metadata": {
 						"language": "sql"
 					},
 					"currentConnection": {
-						"name": "master",
-						"type": "SqlOnDemand"
-					}
-				},
-				"type": "SqlQuery"
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/SQL script 4')]",
-			"type": "Microsoft.Synapse/workspaces/sqlscripts",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"content": {
-					"query": "SELECT\n    TOP 100 *\nFROM\n    OPENROWSET(\n        BULK 'https://openhackec44.dfs.core.windows.net/rawzone/Normalized/catalog/part-00000-8017eaec-d3b9-400f-bb36-eb4e499fc6dd-c000.snappy.parquet',\n        FORMAT='PARQUET'\n    ) AS [result]\r\n",
-					"metadata": {
-						"language": "sql"
-					},
-					"currentConnection": {
-						"name": "master",
-						"type": "SqlOnDemand"
+						"name": "openhackdec44",
+						"type": "SqlPool"
 					}
 				},
 				"type": "SqlQuery"
@@ -2717,13 +2717,13 @@
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
 				"content": {
-					"query": "Create external data source ADLSHack2\nWITH \n( LOCATION = 'abfss://rawzone@openhackec44.dfs.core.windows.net',\n\tTYPE = HADOOP\n)\n\nCREATE EXTERNAL FILE FORMAT csv\nWith\n( FORMAT_TYPE = DELIMITEDTEXT,\n  FORMAT_OPTIONS (\n\tFIELD_TERMINATOR = '|'\n    )\n)\n\nCREATE EXTERNAL FILE FORMAT Parquet WITH (FORMAT_TYPE = PARQUET)\nGO\n\n\nDROP external table ext_catalog\nCREATE EXTERNAL TABLE ext_catalog\n(\n        [SourceSystemId] VARCHAR(2),\n\t\t[SourceSystemMovieId] VARCHAR(38),\n\t\t[SouthridgeMovieId] VARCHAR(38),\n\t\t[PhysicalAvailabilityDate] DATETIME,\n\t\t[StreamingAvailabilityDate] DATETIME,\n\t\t[Genre] VARCHAR(50),\n\t\t[Title] VARCHAR(255),\n\t\t[Rating] VARCHAR(10),\n\t\t[RuntimeMinutes] BIGINT,\n\t\t[TheatricalReleaseYear] BIGINT,\n        [ActorName] VARCHAR(100),\n\t\t[ActorId] VARCHAR(38),\n        [ActorGender] CHAR(1),\n\t\t[CatalogId] VARCHAR(38)\n)\nWITH\n(\n    LOCATION = N'Normalized/catalog',\n    DATA_SOURCE = ADLSHack2,\n    FILE_FORMAT = Parquet,\n    REJECT_TYPE = VALUE,\n    REJECT_VALUE = 0\n)\nGO\n\nselect top 5 * from ext_catalog\n\n---------------------------DIM RATING--------------------------------------------------------------------\nSELECT DISTINCT [Rating] FROM ext_Catalog\n\n-- Output: PG-13, G, R, PG=13, PG\n-- Notice the typo of PG=13. The business would likely want to cleanse this for reporting purposes.\n\nDECLARE @MaxSK INTEGER;\nSELECT @MaxSK = ISNULL(MAX(MovieRatingSK),0) FROM [dbo].DimRatings\n\nINSERT INTO [dbo].DimRatings(\n\tMovieRatingDescription,\n\tMovieRatingSK)\nSELECT * FROM (\n\tSELECT \n\t\tc.Rating AS MovieRatingDescription,\n\t\t@MaxSK + ROW_NUMBER() OVER (ORDER BY c.Rating) AS MovieRatingSK\n\tFROM \n\t\t(SELECT\n\t\t\tDISTINCT CASE\n\t\t\t\tWHEN [Rating] = 'PG=13' THEN 'PG-13'\n\t\t\t\tELSE [Rating]\n\t\t\tEND AS Rating\n\t\tFROM\n\t\t\text_catalog) c\n) CleansedRatings\nWHERE\n\tCleansedRatings.MovieRatingDescription NOT IN (SELECT MovieRatingDescription FROM [dbo].DimRatings)\n\nSELECT * FROM [dbo].DimRatings\n\n\nDECLARE @MaxSK INTEGER;\nSELECT @MaxSK = ISNULL(MAX(ActorSK),0) FROM [dbo].DimActors\n\nINSERT INTO dimActors\n\tSELECT @MaxSK AS ActorSK,ActorID,ActorName,ActorGender from ext_catalog\n\nSELECT * from dimActors",
+					"query": "Create external data source ADLSHack2\nWITH \n( LOCATION = 'abfss://rawzone@openhackec44.dfs.core.windows.net',\n\tTYPE = HADOOP\n)\n\nCREATE EXTERNAL FILE FORMAT csv\nWith\n( FORMAT_TYPE = DELIMITEDTEXT,\n  FORMAT_OPTIONS (\n\tFIELD_TERMINATOR = '|'\n    )\n)\n\nCREATE EXTERNAL FILE FORMAT Parquet WITH (FORMAT_TYPE = PARQUET)\nGO\n\n\nDROP external table ext_catalog\nCREATE EXTERNAL TABLE ext_catalog\n(\n        [SourceSystemId] VARCHAR(2),\n\t\t[SourceSystemMovieId] VARCHAR(38),\n\t\t[SouthridgeMovieId] VARCHAR(38),\n\t\t[PhysicalAvailabilityDate] DATETIME,\n\t\t[StreamingAvailabilityDate] DATETIME,\n\t\t[Genre] VARCHAR(50),\n\t\t[Title] VARCHAR(255),\n\t\t[Rating] VARCHAR(10),\n\t\t[RuntimeMinutes] BIGINT,\n\t\t[TheatricalReleaseYear] BIGINT,\n        [ActorName] VARCHAR(100),\n\t\t[ActorId] VARCHAR(38),\n        [ActorGender] CHAR(1),\n\t\t[CatalogId] VARCHAR(38)\n)\nWITH\n(\n    LOCATION = N'Normalized/catalog',\n    DATA_SOURCE = ADLSHack2,\n    FILE_FORMAT = Parquet,\n    REJECT_TYPE = VALUE,\n    REJECT_VALUE = 0\n)\nGO\n\nselect top 5 * from ext_catalog\n\n---------------------------DIM RATING--------------------------------------------------------------------\nSELECT DISTINCT [Rating] FROM ext_Catalog\n\n-- Output: PG-13, G, R, PG=13, PG\n-- Notice the typo of PG=13. The business would likely want to cleanse this for reporting purposes.\n\nDECLARE @MaxSK INTEGER;\nSELECT @MaxSK = ISNULL(MAX(MovieRatingSK),0) FROM [dbo].DimRatings\n\nINSERT INTO [dbo].DimRatings(\n\tMovieRatingDescription,\n\tMovieRatingSK)\nSELECT * FROM (\n\tSELECT \n\t\tc.Rating AS MovieRatingDescription,\n\t\t@MaxSK + ROW_NUMBER() OVER (ORDER BY c.Rating) AS MovieRatingSK\n\tFROM \n\t\t(SELECT\n\t\t\tDISTINCT CASE\n\t\t\t\tWHEN [Rating] = 'PG=13' THEN 'PG-13'\n\t\t\t\tELSE [Rating]\n\t\t\tEND AS Rating\n\t\tFROM\n\t\t\text_catalog) c\n) CleansedRatings\nWHERE\n\tCleansedRatings.MovieRatingDescription NOT IN (SELECT MovieRatingDescription FROM [dbo].DimRatings)\n\nSELECT * FROM [dbo].DimRatings\n\n---------------------------DIM Actors--------------------------------------------------------------------\nDECLARE @MaxSK INTEGER;\nSELECT @MaxSK = ISNULL(MAX(ActorSK),0) FROM [dbo].DimActors\n\nINSERT INTO dimActors\n\tSELECT @MaxSK + ROW_NUMBER() OVER (ORDER BY ActorID)\n    AS ActorSK,ActorID,ActorName,ActorGender from ext_catalog\n\nSELECT * from dimActors\n\n---------------------------DIM Actors--------------------------------------------------------------------\n\n\n",
 					"metadata": {
 						"language": "sql"
 					},
 					"currentConnection": {
 						"name": "openhackdec44",
-						"type": "SqlCompute"
+						"type": "SqlPool"
 					}
 				},
 				"type": "SqlQuery"
