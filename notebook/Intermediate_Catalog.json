@@ -84,6 +84,12 @@
 				"execution_count": 2
 			},
 			{
+				"cell_type": "markdown",
+				"source": [
+					"## Cell title\n"
+				]
+			},
+			{
 				"cell_type": "code",
 				"source": [
 					"fc_catalog.head(10)"
