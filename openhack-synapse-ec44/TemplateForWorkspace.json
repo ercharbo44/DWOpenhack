@@ -49,15 +49,6 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('workspaceName'), '/openhackdec44')]",
-			"type": "Microsoft.Synapse/workspaces/sqlPools",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"annotations": []
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('workspaceName'), '/CopyPipeline_CloudSales')]",
 			"type": "Microsoft.Synapse/workspaces/pipelines",
 			"apiVersion": "2019-06-01-preview",
@@ -2426,7 +2417,7 @@
 							"name": "Select2"
 						}
 					],
-					"script": "source(output(\n\t\tOrderID as string,\n\t\tCustomerID as string,\n\t\tOrderDate as date,\n\t\tShipDate as date,\n\t\tTotalCost as float,\n\t\tCreatedDate as date,\n\t\tUpdatedDate as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> Salescloud\nsource(output(\n\t\tOrderDetailID as string,\n\t\tOrderID as string,\n\t\tMovieID as string,\n\t\tQuantity as integer,\n\t\tUnitCost as float,\n\t\tLineNumber as integer,\n\t\tCreatedDate as string,\n\t\tUpdatedDate as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> DetailCloud\nSelectorderfields, Select1 join(Selectorderfields@OrderID == Select1@OrderID,\n\tjoinType:'left',\n\tbroadcast: 'auto')~> Join1\nJoin1 derive(SourcedID = 1,\n\t\tUniqueOrderID = concat('1', OrderDetailID),\n\t\tUniqueMovieID = concat('1',MovieID),\n\t\tUniqueCustomerID = concat('1',CustomerID)) ~> DerivedColumn1\nSalescloud select(mapColumn(\n\t\tOrderID,\n\t\tCustomerID,\n\t\tOrderDate,\n\t\tShipDate,\n\t\tTotalCost\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Selectorderfields\nDetailCloud select(mapColumn(\n\t\tOrderDetailID,\n\t\tOrderID,\n\t\tMovieID,\n\t\tQuantity,\n\t\tUnitCost,\n\t\tLineNumber\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\nDerivedColumn1 select(mapColumn(\n\t\tSourceID = SourcedID,\n\t\tUniqueOrderID,\n\t\tOrderID = Select1@OrderID,\n\t\tShipDate = OrderDetailID,\n\t\tTotalCost,\n\t\tOrderDetailID,\n\t\tUniqueMovieID,\n\t\tMovieID,\n\t\tQuantity,\n\t\tUnitCost,\n\t\tLineNumber,\n\t\tCustomerID,\n\t\tUniqueCustomerID,\n\t\tOrderDate,\n\t\tShipDate,\n\t\tTotalCost\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select2\nSelect2 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'parquet',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Ordersdetail"
+					"script": "source(output(\n\t\tOrderID as string,\n\t\tCustomerID as string,\n\t\tOrderDate as date,\n\t\tShipDate as date,\n\t\tTotalCost as float,\n\t\tCreatedDate as date,\n\t\tUpdatedDate as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> Salescloud\nsource(output(\n\t\tOrderDetailID as string,\n\t\tOrderID as string,\n\t\tMovieID as string,\n\t\tQuantity as integer,\n\t\tUnitCost as float,\n\t\tLineNumber as integer,\n\t\tCreatedDate as string,\n\t\tUpdatedDate as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> DetailCloud\nSelectorderfields, Select1 join(Selectorderfields@OrderID == Select1@OrderID,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> Join1\nJoin1 derive(SourcedID = 1,\n\t\tUniqueOrderID = concat('1', OrderDetailID),\n\t\tUniqueMovieID = concat('1',MovieID),\n\t\tUniqueCustomerID = concat('1',CustomerID)) ~> DerivedColumn1\nSalescloud select(mapColumn(\n\t\tOrderID,\n\t\tCustomerID,\n\t\tOrderDate,\n\t\tShipDate,\n\t\tTotalCost\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Selectorderfields\nDetailCloud select(mapColumn(\n\t\tOrderDetailID,\n\t\tOrderID,\n\t\tMovieID,\n\t\tQuantity,\n\t\tUnitCost,\n\t\tLineNumber\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\nDerivedColumn1 select(mapColumn(\n\t\tSourceID = SourcedID,\n\t\tUniqueOrderID,\n\t\tOrderID = Select1@OrderID,\n\t\tShipDate = OrderDetailID,\n\t\tTotalCost,\n\t\tOrderDetailID,\n\t\tUniqueMovieID,\n\t\tMovieID,\n\t\tQuantity,\n\t\tUnitCost,\n\t\tLineNumber,\n\t\tCustomerID,\n\t\tUniqueCustomerID,\n\t\tOrderDate,\n\t\tShipDate,\n\t\tTotalCost\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select2\nSelect2 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'parquet',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Ordersdetail"
 				}
 			},
 			"dependsOn": [
@@ -2770,12 +2761,16 @@
 						"sparkVersion": "2.4",
 						"nodeCount": 10,
 						"cores": 4,
-						"memory": 28
-					}
+						"memory": 28,
+						"extraHeader": {},
+						"automaticScaleJobs": false
+					},
+					"sessionKeepAliveTimeout": 30
 				},
 				"cells": [
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
 							"import uuid\n",
 							"import pyspark.sql.functions as F\n",
@@ -2787,18 +2782,21 @@
 					},
 					{
 						"cell_type": "markdown",
+						"metadata": {},
 						"source": [
 							"# Collect the raw catalog data from all three source systems"
 						]
 					},
 					{
 						"cell_type": "markdown",
+						"metadata": {},
 						"source": [
 							"## From Fourth Coffee"
 						]
 					},
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
 							"fc_movies = spark.read.csv(\"abfss://rawzone@openhackec44.dfs.core.windows.net/FouthCoffee/Movies.csv\", header='true', inferSchema='true')\n",
 							"fc_actors = spark.read.csv(\"abfss://rawzone@openhackec44.dfs.core.windows.net/FouthCoffee/Actors.csv\", header='true', inferSchema='true')\n",
@@ -2818,7 +2816,16 @@
 						"execution_count": 2
 					},
 					{
+						"cell_type": "markdown",
+						"metadata": {},
+						"source": [
+							"## Cell title\n"
+						],
+						"attachments": {}
+					},
+					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
 							"fc_catalog.head(10)"
 						],
@@ -2827,12 +2834,14 @@
 					},
 					{
 						"cell_type": "markdown",
+						"metadata": {},
 						"source": [
 							"## From VanArsdel"
 						]
 					},
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
 							"va_movies = spark.read.parquet(\"abfss://rawzone@openhackec44.dfs.core.windows.net/VanArsdelLTD/dboMovies.parquet\")\n",
 							"va_actors = spark.read.parquet(\"abfss://rawzone@openhackec44.dfs.core.windows.net/VanArsdelLTD/dboActors.parquet\")\n",
@@ -2853,6 +2862,7 @@
 					},
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
 							"va_catalog.head(5)"
 						],
@@ -2861,12 +2871,14 @@
 					},
 					{
 						"cell_type": "markdown",
+						"metadata": {},
 						"source": [
 							"## From Southridge"
 						]
 					},
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
 							"# After reading the JSON, explode the actors array to create multiple rows per movie, each having a single actor name\n",
 							"# Drop the original actors array, as it is then no longer needed\n",
@@ -2881,6 +2893,7 @@
 					},
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
 							"sr_catalog.head(5)\n",
 							""
@@ -2890,6 +2903,7 @@
 					},
 					{
 						"cell_type": "markdown",
+						"metadata": {},
 						"source": [
 							"# Observe inconsistencies in the data types and formats\n",
 							"\n",
@@ -2898,6 +2912,7 @@
 					},
 					{
 						"cell_type": "markdown",
+						"metadata": {},
 						"source": [
 							"## Release dates and availability dates\n",
 							"\n",
@@ -2908,6 +2923,7 @@
 					},
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
 							"fc_dates = fc_catalog.select(col('ReleaseDate').alias('FcReleaseDate'), col('MovieId'), col('OnlineMovieId'))\n",
 							"va_dates = va_catalog.select(col('ReleaseDate').alias('VaReleaseDate'), col('MovieId'), col('OnlineMovieId'))\n",
@@ -2927,6 +2943,7 @@
 					},
 					{
 						"cell_type": "markdown",
+						"metadata": {},
 						"source": [
 							"### Looking at the dates\n",
 							"\n",
@@ -2955,12 +2972,14 @@
 					},
 					{
 						"cell_type": "markdown",
+						"metadata": {},
 						"source": [
 							"> Note: We are not only parsing the dates here, but also adding a column to track the SourceSystemId"
 						]
 					},
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
 							"fc_catalog = fc_catalog \\\n",
 							"  .withColumn('ReleaseDate', F.to_date(col('ReleaseDate'), 'MM-dd-yyyy')) \\\n",
@@ -2980,6 +2999,7 @@
 					},
 					{
 						"cell_type": "markdown",
+						"metadata": {},
 						"source": [
 							"## Unioning the data\n",
 							"\n",
@@ -3028,6 +3048,7 @@
 					},
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
 							"# This is used in the following cells to create a new unique identifier\n",
 							"\n",
@@ -3038,6 +3059,7 @@
 					},
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
 							"sr_conformed = sr_catalog \\\n",
 							"  .select([ \\\n",
@@ -3061,6 +3083,7 @@
 					},
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
 							"# VanArsdel and Fourth Coffee are extremely similar\n",
 							"\n",
@@ -3103,6 +3126,7 @@
 					},
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
 							"# The full catalog is now a straightforward union\n",
 							"\n",
@@ -3114,6 +3138,7 @@
 					},
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
 							"# Let's rehydrate and confirm that everything checks out\n",
 							"\n",
@@ -3577,6 +3602,15 @@
 						"execution_count": null
 					}
 				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/openhackdec44')]",
+			"type": "Microsoft.Synapse/workspaces/sqlPools",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": []
 			},
 			"dependsOn": []
 		}
